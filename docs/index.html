@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Simulador Cuántico en C — laboratorio didáctico</title>
   <meta name="description" content="Explora de forma visual e interactiva un simulador de ordenador cuántico en C: superposición, Bell, Grover, ruido NISQ, QML y estabilizadores Clifford." />
-  <link rel="stylesheet" href="css/style.css?v=4" />
+  <link rel="stylesheet" href="css/style.css?v=5" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b0f1a' stroke='%233ee0ff' stroke-width='2'/%3E%3Cpath d='M16 6 L16 26 M6 16 L26 16' stroke='%23a78bfa' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='16' cy='10' r='3' fill='%233ee0ff'/%3E%3C/svg%3E" />
-  <script src="js/theme.js?v=4"></script>
+  <script src="js/theme.js?v=5"></script>
 </head>
 <body>
   <nav class="nav">
@@ -21,8 +21,10 @@
       <a href="#lab-grover">Grover</a>
       <a href="#qml">QML vs IA</a>
       <a href="#motores">Motores</a>
+      <a href="#" data-start-tour="0">Guía</a>
     </div>
-    <a class="nav-cta" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Código en GitHub →</a>
+    <a class="nav-cta" href="#" data-start-tour="0">Guía paso a paso</a>
+    <a class="nav-cta" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener" style="margin-left:0.35rem">GitHub</a>
   </nav>
 
   <main id="top">
@@ -37,7 +39,8 @@
         (puertas, medición, ruido) sin compilar, o seguir los labs guiados.
       </p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#playground">Usar el simulador</a>
+        <button type="button" class="btn btn-primary" data-start-tour="0">Empezar guía con bocadillos</button>
+        <a class="btn" href="#playground">Usar el simulador</a>
         <a class="btn" href="#lab-1q">Labs guiados</a>
         <a class="btn" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Código C en GitHub</a>
       </div>
@@ -49,19 +52,50 @@
       <p class="section-lead">
         Motor web con la <strong>misma API y convenciones</strong> que
         <code>quantum_sim.c</code> (statevector, qubit 0 = LSB, mismas puertas y ruido).
-        Escribe un circuito, pulsa <strong>Ejecutar</strong> o
-        <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.
+        Sigue los bocadillos o pulsa <strong>Guía paso a paso</strong>.
       </p>
+
+      <div class="bubble-strip section-bubbles">
+        <div class="bubble step-a">
+          <span class="bubble-num">1</span>
+          <div class="bubble-body">
+            <strong>Crear el registro de qubits</strong>
+            <p>La línea <code>qubits 2</code> prepara el estado <code>|00⟩</code> (todo a cero). En C: <code>qs_create(2)</code>.</p>
+          </div>
+        </div>
+        <div class="bubble step-b">
+          <span class="bubble-num">2</span>
+          <div class="bubble-body">
+            <strong>Aplicar puertas (unitarias)</strong>
+            <p><code>H 0</code> pone el qubit 0 en superposición. <code>CNOT 0 1</code> copia la correlación al segundo qubit → estado de Bell.</p>
+          </div>
+        </div>
+        <div class="bubble step-c">
+          <span class="bubble-num">3</span>
+          <div class="bubble-body">
+            <strong>Ejecutar y leer el estado</strong>
+            <p>Pulsa <strong>Ejecutar</strong>. El log muestra cada <code>gate_*</code>. Las barras son probabilidades <code>|amplitud|²</code> de cada base.</p>
+          </div>
+        </div>
+        <div class="bubble step-d">
+          <span class="bubble-num">4</span>
+          <div class="bubble-body">
+            <strong>Medir (opcional) = colapsar</strong>
+            <p><code>MEASURE 0</code> o <code>MEASURE_ALL</code> elige un resultado al azar según las probabilidades y proyecta el estado. Por eso hace falta muchos “tiros”.</p>
+          </div>
+        </div>
+      </div>
 
       <div class="card playground">
         <div class="pg-toolbar">
-          <label class="muted small">Ejemplo
+          <label class="muted small has-tip" data-tip="Elige un circuito de ejemplo ya escrito (Bell, Grover, Deutsch…).">Ejemplo
             <select id="pg-examples"></select>
           </label>
-          <button type="button" class="btn btn-sm" id="pg-load-ex">Cargar y ejecutar</button>
-          <button type="button" class="btn btn-sm btn-primary" id="pg-run" data-action="run" onclick="if(window.__pgRun){window.__pgRun();}else{alert('Motor aun no cargado: espera 1s o Ctrl+F5');} return false;">Ejecutar</button>
+          <button type="button" class="btn btn-sm has-tip" id="pg-load-ex" data-tip="Carga el ejemplo en el editor y lo ejecuta al momento.">Cargar y ejecutar</button>
+          <button type="button" class="btn btn-sm btn-primary has-tip" id="pg-run" data-action="run" data-tip="Aplica todas las líneas del editor sobre el statevector (como el .c)." onclick="if(window.__pgRun){window.__pgRun();}else{alert('Motor aun no cargado: espera 1s o Ctrl+F5');} return false;">Ejecutar</button>
           <button type="button" class="btn btn-sm" id="pg-clear-log">Limpiar log</button>
-          <label class="muted small">qubits
+          <button type="button" class="btn btn-sm" data-start-tour="0">Bocadillos guía</button>
+          <label class="muted small has-tip" data-tip="Número de qubits del registro (máx. 10 en web).">qubits
             <select id="pg-nqubits">
               <option>1</option>
               <option selected>2</option>
@@ -74,34 +108,34 @@
         </div>
 
         <div class="pg-params">
-          <label>q <input id="pg-q" type="number" min="0" max="9" value="0" /></label>
-          <label>q2 <input id="pg-q2" type="number" min="0" max="9" value="1" /></label>
-          <label>q3 <input id="pg-q3" type="number" min="0" max="9" value="2" /></label>
-          <label>ángulo <input id="pg-ang" class="wide" type="text" value="pi/2" /></label>
-          <label>p ruido <input id="pg-noise-p" type="text" value="0.1" /></label>
+          <label class="has-tip" data-tip="Qubit objetivo de las puertas de 1 qubit (0 = LSB).">q <input id="pg-q" type="number" min="0" max="9" value="0" /></label>
+          <label class="has-tip" data-tip="Segundo qubit (p. ej. target de CNOT).">q2 <input id="pg-q2" type="number" min="0" max="9" value="1" /></label>
+          <label class="has-tip" data-tip="Tercer qubit (p. ej. target de Toffoli).">q3 <input id="pg-q3" type="number" min="0" max="9" value="2" /></label>
+          <label class="has-tip" data-tip="Ángulo para RX/RY/RZ: pi/2 o 90deg.">ángulo <input id="pg-ang" class="wide" type="text" value="pi/2" /></label>
+          <label class="has-tip" data-tip="Probabilidad de error para NOISE_DEP.">p ruido <input id="pg-noise-p" type="text" value="0.1" /></label>
         </div>
 
         <div class="pg-gate-panel" aria-label="Paleta de puertas">
-          <button type="button" class="btn" data-gate="H">H</button>
-          <button type="button" class="btn" data-gate="X">X</button>
-          <button type="button" class="btn" data-gate="Y">Y</button>
-          <button type="button" class="btn" data-gate="Z">Z</button>
-          <button type="button" class="btn" data-gate="S">S</button>
-          <button type="button" class="btn" data-gate="T">T</button>
-          <button type="button" class="btn" data-gate="RX">RX</button>
-          <button type="button" class="btn" data-gate="RY">RY</button>
-          <button type="button" class="btn" data-gate="RZ">RZ</button>
-          <button type="button" class="btn" data-gate="CNOT">CNOT</button>
-          <button type="button" class="btn" data-gate="CZ">CZ</button>
-          <button type="button" class="btn" data-gate="SWAP">SWAP</button>
-          <button type="button" class="btn" data-gate="TOFFOLI">TOFFOLI</button>
-          <button type="button" class="btn" data-gate="H_ALL">H_ALL</button>
-          <button type="button" class="btn" data-gate="NOISE_DEP">NOISE_DEP</button>
-          <button type="button" class="btn" data-gate="MEASURE">MEASURE</button>
-          <button type="button" class="btn" data-gate="MEASURE_ALL">MEASURE_ALL</button>
-          <button type="button" class="btn" data-gate="PRINT">PRINT</button>
-          <button type="button" class="btn" data-gate="PROBS">PROBS</button>
-          <button type="button" class="btn" data-gate="RESET">RESET</button>
+          <button type="button" class="btn has-tip" data-gate="H" data-tip="Hadamard: |0⟩ → (|0⟩+|1⟩)/√2. Crea superposición.">H</button>
+          <button type="button" class="btn has-tip" data-gate="X" data-tip="Pauli-X: NOT cuántico. Intercambia |0⟩ y |1⟩.">X</button>
+          <button type="button" class="btn has-tip" data-gate="Y" data-tip="Pauli-Y: rotación con fase imaginaria.">Y</button>
+          <button type="button" class="btn has-tip" data-gate="Z" data-tip="Pauli-Z: cambia el signo de |1⟩ (fase).">Z</button>
+          <button type="button" class="btn has-tip" data-gate="S" data-tip="Puerta S = √Z. Fase de π/2 sobre |1⟩.">S</button>
+          <button type="button" class="btn has-tip" data-gate="T" data-tip="Puerta T = π/8. Fase de π/4 sobre |1⟩.">T</button>
+          <button type="button" class="btn has-tip" data-gate="RX" data-tip="Rotación alrededor del eje X (usa el ángulo).">RX</button>
+          <button type="button" class="btn has-tip" data-gate="RY" data-tip="Rotación alrededor de Y. Muy usada en VQC / encode.">RY</button>
+          <button type="button" class="btn has-tip" data-gate="RZ" data-tip="Rotación alrededor de Z (fase relativa).">RZ</button>
+          <button type="button" class="btn has-tip" data-gate="CNOT" data-tip="CNOT(c,t): si control=1, aplica X al target. Entrelaza.">CNOT</button>
+          <button type="button" class="btn has-tip" data-gate="CZ" data-tip="CZ: fase −1 solo si ambos qubits son |1⟩.">CZ</button>
+          <button type="button" class="btn has-tip" data-gate="SWAP" data-tip="Intercambia dos qubits.">SWAP</button>
+          <button type="button" class="btn has-tip" data-gate="TOFFOLI" data-tip="CCX: X en target si c1 y c2 son 1. Universal clásico.">TOFFOLI</button>
+          <button type="button" class="btn has-tip" data-gate="H_ALL" data-tip="Hadamard en todos los qubits (superposición uniforme).">H_ALL</button>
+          <button type="button" class="btn has-tip" data-gate="NOISE_DEP" data-tip="Ruido depolarizing: con prob p aplica X, Y o Z al azar.">NOISE_DEP</button>
+          <button type="button" class="btn has-tip" data-gate="MEASURE" data-tip="Mide un qubit y colapsa el estado (0 o 1).">MEASURE</button>
+          <button type="button" class="btn has-tip" data-gate="MEASURE_ALL" data-tip="Mide todos los qubits → un estado base clásico.">MEASURE_ALL</button>
+          <button type="button" class="btn has-tip" data-gate="PRINT" data-tip="Imprime amplitudes no nulas en el log.">PRINT</button>
+          <button type="button" class="btn has-tip" data-gate="PROBS" data-tip="Imprime probabilidades |amp|² en el log.">PROBS</button>
+          <button type="button" class="btn has-tip" data-gate="RESET" data-tip="Vuelve a |0…0⟩ sin cambiar el nº de qubits.">RESET</button>
         </div>
 
         <div class="pg-grid">
@@ -113,6 +147,13 @@
             <pre class="pg-log" id="pg-log"></pre>
           </div>
           <div>
+            <div class="bubble step-e" style="margin-bottom:0.75rem">
+              <span class="bubble-num">★</span>
+              <div class="bubble-body">
+                <strong>Cómo leer el resultado</strong>
+                <p>Barras altas = más probabilidad de medir ese estado. En Bell ideal: solo <code>|00⟩</code> y <code>|11⟩</code> al ~50%.</p>
+              </div>
+            </div>
             <h3>Amplitudes</h3>
             <div class="amps" id="pg-amps"></div>
             <h3 style="margin-top:1rem">Probabilidades</h3>
@@ -191,16 +232,39 @@
         Parte de |0⟩. Aplica <strong>H</strong> (Hadamard): obtienes (|0⟩+|1⟩)/√2.
         Cada medición da 0 o 1 al 50%. Acumula tiros y mira el histograma.
       </p>
+      <div class="bubble-strip">
+        <div class="bubble step-a">
+          <span class="bubble-num">1</span>
+          <div class="bubble-body">
+            <strong>Estado inicial |0⟩</strong>
+            <p>Reset deja el qubit en el polo norte de Bloch: al medir obtienes <strong>siempre 0</strong>.</p>
+          </div>
+        </div>
+        <div class="bubble step-b">
+          <span class="bubble-num">2</span>
+          <div class="bubble-body">
+            <strong>Hadamard = superposición</strong>
+            <p>H reparte la amplitud a partes iguales entre |0⟩ y |1⟩. El vector va al ecuador: máxima incertidumbre.</p>
+          </div>
+        </div>
+        <div class="bubble step-c">
+          <span class="bubble-num">3</span>
+          <div class="bubble-body">
+            <strong>Medir colapsa</strong>
+            <p>Un tiro da 0 o 1 al azar (~50%). El estado deja de ser superposición: se proyecta. Por eso el histograma necesita muchos tiros.</p>
+          </div>
+        </div>
+      </div>
       <div class="grid-2">
         <div class="card">
           <h3>Circuito y controles</h3>
           <div class="circuit">q0:  |0⟩ ──[ H ]──[ medida ]──</div>
           <div class="lab-controls">
-            <button class="btn btn-sm" id="btn-reset-1q">Reset |0⟩</button>
-            <button class="btn btn-sm btn-primary" id="btn-h-1q">Hadamard H</button>
-            <button class="btn btn-sm" id="btn-x-1q">Pauli X</button>
-            <button class="btn btn-sm" id="btn-measure-1q">Medir 1 vez</button>
-            <button class="btn btn-sm" id="btn-shots-1q">+50 tiros (estado actual)</button>
+            <button class="btn btn-sm has-tip" id="btn-reset-1q" data-tip="Vuelve a |0⟩ y limpia el histograma de tiros.">Reset |0⟩</button>
+            <button class="btn btn-sm btn-primary has-tip" id="btn-h-1q" data-tip="Aplica Hadamard: crea superposición 50/50.">Hadamard H</button>
+            <button class="btn btn-sm has-tip" id="btn-x-1q" data-tip="Pauli X (NOT): invierte 0↔1.">Pauli X</button>
+            <button class="btn btn-sm has-tip" id="btn-measure-1q" data-tip="Un tiro: colapsa a 0 o 1 y suma al histograma.">Medir 1 vez</button>
+            <button class="btn btn-sm has-tip" id="btn-shots-1q" data-tip="50 mediciones del estado actual (sin rehacer H).">+50 tiros (estado actual)</button>
           </div>
           <p class="stat-line" id="stat-1q"></p>
           <div class="callout idea">
@@ -236,15 +300,38 @@
         El estado es (|00⟩+|11⟩)/√2. Las mediciones de ambos qubits
         <strong>siempre coinciden</strong> — aunque cada uno por separado sea aleatorio.
       </p>
+      <div class="bubble-strip">
+        <div class="bubble step-a">
+          <span class="bubble-num">1</span>
+          <div class="bubble-body">
+            <strong>H en el control</strong>
+            <p>q0 queda en (|0⟩+|1⟩)/√2; q1 sigue en |0⟩. Aún no hay entrelazamiento.</p>
+          </div>
+        </div>
+        <div class="bubble step-b">
+          <span class="bubble-num">2</span>
+          <div class="bubble-body">
+            <strong>CNOT “copia” la correlación</strong>
+            <p>Si q0 fuera 1, q1 se invierte. En superposición eso crea (|00⟩+|11⟩)/√2: ya no se puede describir cada qubit por separado.</p>
+          </div>
+        </div>
+        <div class="bubble step-c">
+          <span class="bubble-num">3</span>
+          <div class="bubble-body">
+            <strong>Mide muchas veces</strong>
+            <p>Verás solo |00⟩ y |11⟩. Nunca (idealmente) |01⟩ o |10⟩. Eso es la firma del Bell Φ+.</p>
+          </div>
+        </div>
+      </div>
       <div class="grid-2">
         <div class="card">
           <h3>Construye el par de Bell</h3>
           <div class="circuit">q0:  |0⟩ ──[ H ]──●──
 q1:  |0⟩ ─────────⊕──</div>
           <div class="lab-controls">
-            <button class="btn btn-sm btn-primary" id="btn-bell-build">Crear Bell Φ+</button>
-            <button class="btn btn-sm" id="btn-bell-measure">Medir ambos (1 tiro)</button>
-            <button class="btn btn-sm" id="btn-bell-shots">40 tiros (reconstruye Bell)</button>
+            <button class="btn btn-sm btn-primary has-tip" id="btn-bell-build" data-tip="H(q0) + CNOT(0→1) = estado de Bell Φ+.">Crear Bell Φ+</button>
+            <button class="btn btn-sm has-tip" id="btn-bell-measure" data-tip="Un tiro de ambos qubits (colapsa el par).">Medir ambos (1 tiro)</button>
+            <button class="btn btn-sm has-tip" id="btn-bell-shots" data-tip="40 experimentos independientes reconstruyendo Bell cada vez.">40 tiros (reconstruye Bell)</button>
           </div>
           <p class="stat-line" id="stat-bell"></p>
           <div class="amps" id="amps-bell"></div>
@@ -273,9 +360,32 @@ q1:  |0⟩ ─────────⊕──</div>
         a un estado de Bell y promediamos muchas trayectorias — igual que
         <code>noise_demo.c</code> en el repositorio.
       </p>
+      <div class="bubble-strip">
+        <div class="bubble step-a">
+          <span class="bubble-num">1</span>
+          <div class="bubble-body">
+            <strong>Bell ideal: ⟨ZZ⟩ = 1</strong>
+            <p>Sin ruido la correlación es perfecta. Mueve el deslizador y verás cómo baja.</p>
+          </div>
+        </div>
+        <div class="bubble step-b">
+          <span class="bubble-num">2</span>
+          <div class="bubble-body">
+            <strong>Depolarizing = error aleatorio</strong>
+            <p>Con probabilidad p el qubit “se equivoca” (X, Y o Z). Promediamos muchas trayectorias como en el C.</p>
+          </div>
+        </div>
+        <div class="bubble step-c">
+          <span class="bubble-num">3</span>
+          <div class="bubble-body">
+            <strong>Lección práctica</strong>
+            <p>Algoritmos profundos acumulan error. Por eso importa la profundidad y la corrección de errores (QEC).</p>
+          </div>
+        </div>
+      </div>
       <div class="card">
         <div class="lab-controls">
-          <label>p error <input type="range" id="noise-slider" min="0" max="0.5" step="0.01" value="0.10" /> <span id="noise-p-label">0.10</span></label>
+          <label class="has-tip" data-tip="Probabilidad de aplicar un error Pauli al azar en cada qubit del Bell.">p error <input type="range" id="noise-slider" min="0" max="0.5" step="0.01" value="0.10" /> <span id="noise-p-label">0.10</span></label>
         </div>
         <div class="grid-2">
           <div>
@@ -302,12 +412,35 @@ q1:  |0⟩ ─────────⊕──</div>
         Con 1 iteración ideal, la probabilidad se concentra en |11⟩.
         Añade ruido tras cada capa y observa cómo cae el éxito.
       </p>
+      <div class="bubble-strip">
+        <div class="bubble step-a">
+          <span class="bubble-num">1</span>
+          <div class="bubble-body">
+            <strong>Superposición uniforme</strong>
+            <p><code>H⊗H</code> pone probabilidad 25% en cada uno de |00⟩,|01⟩,|10⟩,|11⟩.</p>
+          </div>
+        </div>
+        <div class="bubble step-b">
+          <span class="bubble-num">2</span>
+          <div class="bubble-body">
+            <strong>Oráculo marca |11⟩</strong>
+            <p>CZ invierte la fase del estado buscado (lo “marca” sin medirlo todavía).</p>
+          </div>
+        </div>
+        <div class="bubble step-c">
+          <span class="bubble-num">3</span>
+          <div class="bubble-body">
+            <strong>Difusor amplifica</strong>
+            <p>La reflexión sobre la media concentra la amplitud en el marcado. Ideal: P(|11⟩)≈1. Con ruido, cae.</p>
+          </div>
+        </div>
+      </div>
       <div class="card">
         <div class="circuit">H⊗H → oráculo CZ → difusor → (ruido opcional en cada capa)</div>
         <div class="lab-controls">
-          <button class="btn btn-sm btn-primary" id="btn-grover-ideal">Grover ideal</button>
-          <label>ruido p <input type="range" id="grover-noise" min="0" max="0.25" step="0.01" value="0.05" /> <span id="grover-noise-label">0.05</span></label>
-          <button class="btn btn-sm" id="btn-grover-noise">Simular con ruido</button>
+          <button class="btn btn-sm btn-primary has-tip" id="btn-grover-ideal" data-tip="Una iteración de Grover sin ruido: debería dar casi 100% en |11⟩.">Grover ideal</button>
+          <label class="has-tip" data-tip="Ruido depolarizing tras capas del circuito.">ruido p <input type="range" id="grover-noise" min="0" max="0.25" step="0.01" value="0.05" /> <span id="grover-noise-label">0.05</span></label>
+          <button class="btn btn-sm has-tip" id="btn-grover-noise" data-tip="Promedia muchas trayectorias ruidosas.">Simular con ruido</button>
         </div>
         <p class="stat-line" id="grover-stats"></p>
         <div class="hist" id="hist-grover"></div>
@@ -322,6 +455,22 @@ q1:  |0⟩ ─────────⊕──</div>
         regresión logística, un MLP de 8 neuronas y un VQC de 2 qubits simulado.
         Accuracy de test típica de esa demo:
       </p>
+      <div class="bubble-strip">
+        <div class="bubble step-a">
+          <span class="bubble-num">1</span>
+          <div class="bubble-body">
+            <strong>Misma tarea, tres modelos</strong>
+            <p>Clasificar puntos 2D. La logística solo traza una recta; el MLP y el VQC pueden ser no lineales.</p>
+          </div>
+        </div>
+        <div class="bubble step-b">
+          <span class="bubble-num">2</span>
+          <div class="bubble-body">
+            <strong>VQC gana a lo lineal ≠ ventaja cuántica</strong>
+            <p>En XOR el VQC acierta; la logística falla. Pero un MLP minúsculo también acierta y escala mejor.</p>
+          </div>
+        </div>
+      </div>
       <div class="card" style="overflow-x:auto">
         <table class="compare">
           <thead>
@@ -371,6 +520,22 @@ q1:  |0⟩ ─────────⊕──</div>
       <p class="section-lead">
         El repositorio no es un solo simulador: son dos herramientas con nichos distintos.
       </p>
+      <div class="bubble-strip">
+        <div class="bubble step-a">
+          <span class="bubble-num">1</span>
+          <div class="bubble-body">
+            <strong>Statevector</strong>
+            <p>Guarda 2ⁿ amplitudes. Sirve para H, T, Rx, ruido, VQC… Límite práctico ~12 qubits en PC.</p>
+          </div>
+        </div>
+        <div class="bubble step-b">
+          <span class="bubble-num">2</span>
+          <div class="bubble-body">
+            <strong>Estabilizadores (Clifford)</strong>
+            <p>Solo H, S, CNOT, Pauli… pero escala a cientos de qubits: GHZ-64, códigos de corrección de errores.</p>
+          </div>
+        </div>
+      </div>
       <div class="engines">
         <div class="engine-card sv">
           <h3>Statevector · <code>quantum_sim</code></h3>
@@ -458,9 +623,10 @@ make run-stab</div>
   </main>
 
   <!-- ?v= evita caché vieja en GitHub Pages / navegador -->
-  <script src="js/quantum_sim.js?v=4"></script>
-  <script src="js/playground.js?v=4"></script>
-  <script src="js/app.js?v=4"></script>
+  <script src="js/quantum_sim.js?v=5"></script>
+  <script src="js/playground.js?v=5"></script>
+  <script src="js/app.js?v=5"></script>
+  <script src="js/tour.js?v=5"></script>
   <script>
     // Diagnóstico visible si el motor no arranca
     (function () {
