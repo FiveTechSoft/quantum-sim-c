@@ -5,6 +5,7 @@ Toolkit educativo de computación cuántica en **C puro** (sin dependencias): do
 **Sitio didáctico (GitHub Pages):**  
 https://fivetechsoft.github.io/quantum-sim-c/
 
+En la web puedes **usar el simulador** (playground): misma API/convenciones que `quantum_sim.c`, DSL de circuitos, puertas, medición y ruido NISQ en el navegador (`docs/js/quantum_sim.js`).
 ## Motores
 
 | Motor | Archivos | Escala | Uso |

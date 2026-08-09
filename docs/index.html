@@ -12,6 +12,7 @@
   <nav class="nav">
     <a class="nav-brand" href="#top"><span class="dot"></span> quantum-sim-c</a>
     <div class="nav-links">
+      <a href="#playground"><strong>Simulador</strong></a>
       <a href="#aprender">Aprender</a>
       <a href="#lab-1q">1 qubit</a>
       <a href="#lab-bell">Bell</a>
@@ -30,14 +31,112 @@
       <p class="lead">
         Esta página visualiza el proyecto
         <strong style="color:var(--text)">quantum-sim-c</strong>:
-        un simulador educativo en lenguaje C. Aquí no hace falta compilar:
-        experimenta superposición, entrelazamiento, ruido y algoritmos con demos en vivo.
+        un simulador educativo en lenguaje C. En esta web puedes
+        <strong style="color:var(--text)">ejecutar el mismo motor</strong>
+        (puertas, medición, ruido) sin compilar, o seguir los labs guiados.
       </p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#lab-1q">Empezar el laboratorio</a>
-        <a class="btn" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Ver repositorio</a>
+        <a class="btn btn-primary" href="#playground">Usar el simulador</a>
+        <a class="btn" href="#lab-1q">Labs guiados</a>
+        <a class="btn" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Código C en GitHub</a>
       </div>
     </header>
+
+    <!-- PLAYGROUND: usar el simulador -->
+    <section id="playground">
+      <h2>Usa el simulador ahora</h2>
+      <p class="section-lead">
+        Motor web con la <strong>misma API y convenciones</strong> que
+        <code>quantum_sim.c</code> (statevector, qubit 0 = LSB, mismas puertas y ruido).
+        Escribe un circuito, pulsa <strong>Ejecutar</strong> o
+        <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.
+      </p>
+
+      <div class="card playground">
+        <div class="pg-toolbar">
+          <label class="muted small">Ejemplo
+            <select id="pg-examples"></select>
+          </label>
+          <button type="button" class="btn btn-sm" id="pg-load-ex">Cargar y ejecutar</button>
+          <button type="button" class="btn btn-sm btn-primary" id="pg-run">▶ Ejecutar</button>
+          <button type="button" class="btn btn-sm" id="pg-clear-log">Limpiar log</button>
+          <label class="muted small">qubits
+            <select id="pg-nqubits">
+              <option>1</option>
+              <option selected>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="pg-params">
+          <label>q <input id="pg-q" type="number" min="0" max="9" value="0" /></label>
+          <label>q2 <input id="pg-q2" type="number" min="0" max="9" value="1" /></label>
+          <label>q3 <input id="pg-q3" type="number" min="0" max="9" value="2" /></label>
+          <label>ángulo <input id="pg-ang" class="wide" type="text" value="pi/2" /></label>
+          <label>p ruido <input id="pg-noise-p" type="text" value="0.1" /></label>
+        </div>
+
+        <div class="pg-gate-panel" aria-label="Paleta de puertas">
+          <button type="button" class="btn" data-gate="H">H</button>
+          <button type="button" class="btn" data-gate="X">X</button>
+          <button type="button" class="btn" data-gate="Y">Y</button>
+          <button type="button" class="btn" data-gate="Z">Z</button>
+          <button type="button" class="btn" data-gate="S">S</button>
+          <button type="button" class="btn" data-gate="T">T</button>
+          <button type="button" class="btn" data-gate="RX">RX</button>
+          <button type="button" class="btn" data-gate="RY">RY</button>
+          <button type="button" class="btn" data-gate="RZ">RZ</button>
+          <button type="button" class="btn" data-gate="CNOT">CNOT</button>
+          <button type="button" class="btn" data-gate="CZ">CZ</button>
+          <button type="button" class="btn" data-gate="SWAP">SWAP</button>
+          <button type="button" class="btn" data-gate="TOFFOLI">TOFFOLI</button>
+          <button type="button" class="btn" data-gate="H_ALL">H_ALL</button>
+          <button type="button" class="btn" data-gate="NOISE_DEP">NOISE_DEP</button>
+          <button type="button" class="btn" data-gate="MEASURE">MEASURE</button>
+          <button type="button" class="btn" data-gate="MEASURE_ALL">MEASURE_ALL</button>
+          <button type="button" class="btn" data-gate="PRINT">PRINT</button>
+          <button type="button" class="btn" data-gate="PROBS">PROBS</button>
+          <button type="button" class="btn" data-gate="RESET">RESET</button>
+        </div>
+
+        <div class="pg-grid">
+          <div>
+            <label class="muted small" for="pg-code">Circuito (DSL → llamadas gate_* / measure_*)</label>
+            <textarea id="pg-code" class="pg-code" spellcheck="false" aria-label="Código del circuito"></textarea>
+            <p class="pg-status" id="pg-status"></p>
+            <label class="muted small">Log del motor (equivalente a printf del C)</label>
+            <pre class="pg-log" id="pg-log"></pre>
+          </div>
+          <div>
+            <h3>Amplitudes</h3>
+            <div class="amps" id="pg-amps"></div>
+            <h3 style="margin-top:1rem">Probabilidades</h3>
+            <div class="hist" id="pg-hist"></div>
+          </div>
+        </div>
+
+        <div class="pg-help">
+          <strong>Sintaxis:</strong>
+          <code>qubits N</code>
+          <code>H q</code>
+          <code>CNOT c t</code>
+          <code>RY q pi/2</code>
+          <code>RX q 90deg</code>
+          <code>TOFFOLI c1 c2 t</code>
+          <code>NOISE_DEP q p</code>
+          <code>MEASURE q</code>
+          <code>MEASURE_ALL</code>
+          <code>PRINT</code>
+          <code>PROBS</code>
+          · Comentarios con <code>#</code>
+          · En C sería <code>gate_h(qs, 0); gate_cnot(qs, 0, 1);</code>
+        </div>
+      </div>
+    </section>
 
     <!-- Objetivos de aprendizaje -->
     <section id="aprender">
@@ -357,7 +456,8 @@ make run-stab</div>
     </footer>
   </main>
 
-  <script src="js/quantum.js"></script>
+  <script src="js/quantum_sim.js"></script>
+  <script src="js/playground.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
