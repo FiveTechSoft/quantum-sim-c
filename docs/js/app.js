@@ -4,9 +4,18 @@
 (function () {
   "use strict";
   var QS = window.QSim;
+  if (!QS) {
+    console.error("QSim no disponible (¿falló quantum_sim.js?)");
+    return;
+  }
 
   function $(id) {
     return document.getElementById(id);
+  }
+
+  function on(id, ev, fn) {
+    var el = $(id);
+    if (el) el.addEventListener(ev, fn);
   }
 
   function renderAmps(container, qs) {
@@ -139,44 +148,44 @@
     ctx.fill();
   }
 
-  $("btn-reset-1q").onclick = function () {
+  on("btn-reset-1q", "click", function () {
     q1.reset();
     hist1 = { 0: 0, 1: 0 };
     shots1 = 0;
     refresh1();
-  };
-  $("btn-h-1q").onclick = function () {
+  });
+  on("btn-h-1q", "click", function () {
     q1.h(0);
     refresh1();
-  };
-  $("btn-x-1q").onclick = function () {
+  });
+  on("btn-x-1q", "click", function () {
     q1.x(0);
     refresh1();
-  };
-  $("btn-measure-1q").onclick = function () {
+  });
+  on("btn-measure-1q", "click", function () {
     var copy = q1.clone();
     var m = copy.measure(0);
     hist1[m] = (hist1[m] || 0) + 1;
     shots1++;
-    $("hist-1q").classList.remove("flash");
-    void $("hist-1q").offsetWidth;
-    $("hist-1q").classList.add("flash");
-    // collapse displayed state to measured
+    var h = $("hist-1q");
+    if (h) {
+      h.classList.remove("flash");
+      void h.offsetWidth;
+      h.classList.add("flash");
+    }
     q1 = copy;
     refresh1();
-  };
-  $("btn-shots-1q").onclick = function () {
+  });
+  on("btn-shots-1q", "click", function () {
     var base = q1.clone();
-    // if already collapsed, rebuild H|0> for demo convenience
     for (var i = 0; i < 50; i++) {
       var c = base.clone();
-      // if state is computational after measure, user should re-apply H
       var m = c.measureAll();
       hist1[m] = (hist1[m] || 0) + 1;
       shots1++;
     }
     refresh1();
-  };
+  });
 
   /* ---------- 2. Bell ---------- */
   var qBell = new QS.QuantumState(2);
@@ -206,21 +215,21 @@
     renderHist($("hist-bell"), histBell, 2);
   }
 
-  $("btn-bell-build").onclick = function () {
+  on("btn-bell-build", "click", function () {
     makeBell(qBell);
     histBell = { 0: 0, 1: 0, 2: 0, 3: 0 };
     shotsBell = 0;
     refreshBell();
-  };
-  $("btn-bell-measure").onclick = function () {
+  });
+  on("btn-bell-measure", "click", function () {
     var c = qBell.clone();
     var m = c.measureAll();
     histBell[m] = (histBell[m] || 0) + 1;
     shotsBell++;
     qBell = c;
     refreshBell();
-  };
-  $("btn-bell-shots").onclick = function () {
+  });
+  on("btn-bell-shots", "click", function () {
     for (var i = 0; i < 40; i++) {
       var c = new QS.QuantumState(2);
       makeBell(c);
@@ -228,18 +237,19 @@
       histBell[m] = (histBell[m] || 0) + 1;
       shotsBell++;
     }
-    // restore pure Bell for amp display
     makeBell(qBell);
     refreshBell();
-  };
+  });
 
   /* ---------- 3. Noise ---------- */
   var noiseP = 0.1;
 
   function runNoiseSim() {
-    var p = parseFloat($("noise-slider").value);
+    var sl = $("noise-slider");
+    if (!sl) return;
+    var p = parseFloat(sl.value);
     noiseP = p;
-    $("noise-p-label").textContent = p.toFixed(2);
+    if ($("noise-p-label")) $("noise-p-label").textContent = p.toFixed(2);
     var nTraj = 200;
     var sumZZ = 0;
     var sumFid = 0;
@@ -273,12 +283,14 @@
       "%</span>";
   }
 
-  $("noise-slider").oninput = runNoiseSim;
+  on("noise-slider", "input", runNoiseSim);
 
   /* ---------- 4. Grover ---------- */
   function runGrover(withNoise) {
-    var p = withNoise ? parseFloat($("grover-noise").value) : 0;
-    $("grover-noise-label").textContent = p.toFixed(2);
+    var gn = $("grover-noise");
+    var p = withNoise && gn ? parseFloat(gn.value) : 0;
+    if ($("grover-noise-label"))
+      $("grover-noise-label").textContent = p.toFixed(2);
     var nTraj = withNoise ? 150 : 1;
     var sum = [0, 0, 0, 0];
     for (var t = 0; t < nTraj; t++) {
@@ -321,27 +333,32 @@
       "P(|11⟩) ≈ " + (counts[3] * 100).toFixed(1) + "%  (objetivo de búsqueda)";
   }
 
-  $("btn-grover-ideal").onclick = function () {
+  on("btn-grover-ideal", "click", function () {
     runGrover(false);
-  };
-  $("grover-noise").oninput = function () {
+  });
+  on("grover-noise", "input", function () {
     runGrover(true);
-  };
-  $("btn-grover-noise").onclick = function () {
+  });
+  on("btn-grover-noise", "click", function () {
     runGrover(true);
-  };
-
-  /* ---------- 5. VQC vs MLP static story ---------- */
-  // already in HTML tables
+  });
 
   /* Init */
-  if ($("bloch")) {
-    $("bloch").width = 180;
-    $("bloch").height = 180;
+  try {
+    if ($("bloch")) {
+      $("bloch").width = 180;
+      $("bloch").height = 180;
+    }
+    if ($("amps-1q")) {
+      refresh1();
+    }
+    if ($("amps-bell")) {
+      makeBell(qBell);
+      refreshBell();
+    }
+    if ($("noise-slider")) runNoiseSim();
+    if ($("hist-grover")) runGrover(false);
+  } catch (err) {
+    console.error("Error iniciando labs:", err);
   }
-  refresh1();
-  makeBell(qBell);
-  refreshBell();
-  runNoiseSim();
-  runGrover(false);
 })();

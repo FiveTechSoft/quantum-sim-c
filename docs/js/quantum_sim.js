@@ -29,7 +29,13 @@
 
   /* ---------- Complejos ---------- */
   function C(re, im) {
-    return { re: re, im: im || 0 };
+    return {
+      re: re,
+      im: im || 0,
+      abs2: function () {
+        return this.re * this.re + this.im * this.im;
+      },
+    };
   }
   function c_add(a, b) {
     return C(a.re + b.re, a.im + b.im);
