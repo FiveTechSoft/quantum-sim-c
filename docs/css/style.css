@@ -871,6 +871,103 @@ footer {
   color: var(--muted);
 }
 
+/* ---------- Tabs ---------- */
+.tabs-wrap {
+  margin-top: 0.5rem;
+}
+
+.tabs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  margin: 0 0 1.15rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  position: sticky;
+  top: 56px;
+  z-index: 40;
+  box-shadow: var(--shadow);
+}
+
+.tabs-bar [data-tab] {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.tabs-bar [data-tab]:hover {
+  color: var(--text);
+  background: var(--bg3);
+}
+
+.tabs-bar [data-tab].is-active {
+  color: var(--bg);
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border-color: transparent;
+  box-shadow: 0 0 16px rgba(62, 224, 255, 0.25);
+}
+
+.tabs-bar [data-tab]:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.tab-panel {
+  display: none;
+  animation: tabIn 0.22s ease;
+}
+
+.tab-panel.is-active {
+  display: block;
+}
+
+.tab-panel[hidden] {
+  display: none !important;
+}
+
+@keyframes tabIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-panel > section {
+  margin-top: 0.5rem;
+}
+
+.tab-panel > section:first-child {
+  margin-top: 0;
+}
+
+.hero {
+  padding-bottom: 1.25rem;
+}
+
+.hero p.lead {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  .tabs-bar {
+    top: 48px;
+    gap: 0.25rem;
+    padding: 0.35rem;
+  }
+  .tabs-bar [data-tab] {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.55rem;
+  }
+}
+
 .tour-fab {
   position: fixed;
   bottom: 56px;

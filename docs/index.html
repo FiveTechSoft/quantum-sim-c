@@ -5,21 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Simulador Cuántico en C — laboratorio didáctico</title>
   <meta name="description" content="Explora de forma visual e interactiva un simulador de ordenador cuántico en C: superposición, Bell, Grover, ruido NISQ, QML y estabilizadores Clifford." />
-  <link rel="stylesheet" href="css/style.css?v=5" />
+  <link rel="stylesheet" href="css/style.css?v=6" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b0f1a' stroke='%233ee0ff' stroke-width='2'/%3E%3Cpath d='M16 6 L16 26 M6 16 L26 16' stroke='%23a78bfa' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='16' cy='10' r='3' fill='%233ee0ff'/%3E%3C/svg%3E" />
-  <script src="js/theme.js?v=5"></script>
+  <script src="js/theme.js?v=6"></script>
 </head>
 <body>
   <nav class="nav">
-    <a class="nav-brand" href="#top"><span class="dot"></span> quantum-sim-c</a>
+    <a class="nav-brand" href="#simulador"><span class="dot"></span> quantum-sim-c</a>
     <div class="nav-links">
-      <a href="#playground"><strong>Simulador</strong></a>
+      <a href="#simulador">Simulador</a>
       <a href="#aprender">Aprender</a>
-      <a href="#lab-1q">1 qubit</a>
-      <a href="#lab-bell">Bell</a>
-      <a href="#lab-noise">Ruido</a>
-      <a href="#lab-grover">Grover</a>
-      <a href="#qml">QML vs IA</a>
+      <a href="#lab-1q">Labs</a>
+      <a href="#qml">QML</a>
       <a href="#motores">Motores</a>
       <a href="#" data-start-tour="0">Guía</a>
     </div>
@@ -40,13 +37,27 @@
       </p>
       <div class="hero-actions">
         <button type="button" class="btn btn-primary" data-start-tour="0">Empezar guía con bocadillos</button>
-        <a class="btn" href="#playground">Usar el simulador</a>
+        <a class="btn" href="#simulador">Usar el simulador</a>
         <a class="btn" href="#lab-1q">Labs guiados</a>
         <a class="btn" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Código C en GitHub</a>
       </div>
     </header>
 
+    <div class="tabs-wrap" id="tabs-root">
+      <div class="tabs-bar" role="tablist" aria-label="Secciones del laboratorio">
+        <button type="button" role="tab" data-tab="simulador" class="is-active" aria-selected="true">Simulador</button>
+        <button type="button" role="tab" data-tab="aprender" aria-selected="false">Aprender</button>
+        <button type="button" role="tab" data-tab="lab-1q" aria-selected="false">1 qubit</button>
+        <button type="button" role="tab" data-tab="lab-bell" aria-selected="false">Bell</button>
+        <button type="button" role="tab" data-tab="lab-noise" aria-selected="false">Ruido</button>
+        <button type="button" role="tab" data-tab="lab-grover" aria-selected="false">Grover</button>
+        <button type="button" role="tab" data-tab="qml" aria-selected="false">QML vs IA</button>
+        <button type="button" role="tab" data-tab="motores" aria-selected="false">Motores</button>
+      </div>
+
+      <div class="tab-panels">
     <!-- PLAYGROUND: usar el simulador -->
+    <div class="tab-panel is-active" data-tab-panel="simulador" id="tab-simulador" role="tabpanel">
     <section id="playground">
       <h2>Usa el simulador ahora</h2>
       <p class="section-lead">
@@ -179,8 +190,10 @@
         </div>
       </div>
     </section>
+    </div><!-- /tab simulador -->
 
     <!-- Objetivos de aprendizaje -->
+    <div class="tab-panel" data-tab-panel="aprender" id="tab-aprender" role="tabpanel" hidden>
     <section id="aprender">
       <h2>Objetivo de aprendizaje</h2>
       <p class="section-lead">
@@ -224,8 +237,10 @@
         <div class="chip"><strong>Clifford</strong>Subconjunto de puertas simulable a n grande</div>
       </div>
     </section>
+    </div><!-- /tab aprender -->
 
     <!-- Lab 1 qubit -->
+    <div class="tab-panel" data-tab-panel="lab-1q" id="tab-lab-1q" role="tabpanel" hidden>
     <section id="lab-1q">
       <h2>Laboratorio 1 · Un qubit y la superposición</h2>
       <p class="section-lead">
@@ -291,8 +306,10 @@
         </div>
       </div>
     </section>
+    </div><!-- /tab lab-1q -->
 
     <!-- Bell -->
+    <div class="tab-panel" data-tab-panel="lab-bell" id="tab-lab-bell" role="tabpanel" hidden>
     <section id="lab-bell">
       <h2>Laboratorio 2 · Entrelazamiento (Bell Φ+)</h2>
       <p class="section-lead">
@@ -350,8 +367,10 @@ q1:  |0⟩ ─────────⊕──</div>
         </div>
       </div>
     </section>
+    </div><!-- /tab lab-bell -->
 
     <!-- Noise -->
+    <div class="tab-panel" data-tab-panel="lab-noise" id="tab-lab-noise" role="tabpanel" hidden>
     <section id="lab-noise">
       <h2>Laboratorio 3 · Ruido NISQ</h2>
       <p class="section-lead">
@@ -403,8 +422,10 @@ q1:  |0⟩ ─────────⊕──</div>
         </div>
       </div>
     </section>
+    </div><!-- /tab lab-noise -->
 
     <!-- Grover -->
+    <div class="tab-panel" data-tab-panel="lab-grover" id="tab-lab-grover" role="tabpanel" hidden>
     <section id="lab-grover">
       <h2>Laboratorio 4 · Búsqueda de Grover (2 qubits)</h2>
       <p class="section-lead">
@@ -446,8 +467,10 @@ q1:  |0⟩ ─────────⊕──</div>
         <div class="hist" id="hist-grover"></div>
       </div>
     </section>
+    </div><!-- /tab lab-grover -->
 
     <!-- QML -->
+    <div class="tab-panel" data-tab-panel="qml" id="tab-qml" role="tabpanel" hidden>
     <section id="qml">
       <h2>QML vs IA clásica (resultado del repo)</h2>
       <p class="section-lead">
@@ -513,8 +536,10 @@ q1:  |0⟩ ─────────⊕──</div>
         </div>
       </div>
     </section>
+    </div><!-- /tab qml -->
 
     <!-- Engines -->
+    <div class="tab-panel" data-tab-panel="motores" id="tab-motores" role="tabpanel" hidden>
     <section id="motores">
       <h2>Dos motores en C · ¿cuál usar?</h2>
       <p class="section-lead">
@@ -608,6 +633,10 @@ make run-stab</div>
         </div>
       </div>
     </section>
+    </div><!-- /tab motores -->
+
+      </div><!-- /.tab-panels -->
+    </div><!-- /#tabs-root -->
 
     <footer>
       <p>
@@ -623,10 +652,11 @@ make run-stab</div>
   </main>
 
   <!-- ?v= evita caché vieja en GitHub Pages / navegador -->
-  <script src="js/quantum_sim.js?v=5"></script>
-  <script src="js/playground.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
-  <script src="js/tour.js?v=5"></script>
+  <script src="js/tabs.js?v=6"></script>
+  <script src="js/quantum_sim.js?v=6"></script>
+  <script src="js/playground.js?v=6"></script>
+  <script src="js/app.js?v=6"></script>
+  <script src="js/tour.js?v=6"></script>
   <script>
     // Diagnóstico visible si el motor no arranca
     (function () {

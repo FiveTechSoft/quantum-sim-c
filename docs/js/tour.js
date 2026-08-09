@@ -162,15 +162,21 @@
     var step = STEPS[idx];
     clearHighlight();
 
+    // Abrir la pestaña correcta antes de resaltar
+    if (typeof window.switchTabForSelector === "function") {
+      try {
+        window.switchTabForSelector(step.sel);
+      } catch (e) {}
+    }
+
     var el = $(step.sel);
     if (!el) {
-      // saltar pasos sin elemento
       showStep(idx + 1);
       return;
     }
 
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
     setTimeout(function () {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
       el.classList.add("tour-highlight");
       highlightEl = el;
       if (typeof step.action === "function") {
@@ -187,7 +193,7 @@
       bubble.querySelector(".tour-progress").textContent =
         idx + 1 + " · " + STEPS.length;
       placeBubble(el);
-    }, 280);
+    }, 120);
   }
 
   function startTour(from) {
