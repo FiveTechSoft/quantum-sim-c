@@ -2,6 +2,9 @@
 
 Toolkit educativo de computación cuántica en **C puro** (sin dependencias): dos motores, demos de algoritmos, ruido NISQ y una comparación honesta de QML vs ML clásico.
 
+**Sitio didáctico (GitHub Pages):**  
+https://fivetechsoft.github.io/quantum-sim-c/
+
 ## Motores
 
 | Motor | Archivos | Escala | Uso |

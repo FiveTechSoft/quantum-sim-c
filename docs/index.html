@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simulador Cuántico en C — laboratorio didáctico</title>
+  <meta name="description" content="Explora de forma visual e interactiva un simulador de ordenador cuántico en C: superposición, Bell, Grover, ruido NISQ, QML y estabilizadores Clifford." />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b0f1a' stroke='%233ee0ff' stroke-width='2'/%3E%3Cpath d='M16 6 L16 26 M6 16 L26 16' stroke='%23a78bfa' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='16' cy='10' r='3' fill='%233ee0ff'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <nav class="nav">
+    <a class="nav-brand" href="#top"><span class="dot"></span> quantum-sim-c</a>
+    <div class="nav-links">
+      <a href="#aprender">Aprender</a>
+      <a href="#lab-1q">1 qubit</a>
+      <a href="#lab-bell">Bell</a>
+      <a href="#lab-noise">Ruido</a>
+      <a href="#lab-grover">Grover</a>
+      <a href="#qml">QML vs IA</a>
+      <a href="#motores">Motores</a>
+    </div>
+    <a class="nav-cta" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Código en GitHub →</a>
+  </nav>
+
+  <main id="top">
+    <header class="hero">
+      <div class="badge">Laboratorio didáctico · C + web interactiva</div>
+      <h1>¿Qué hace un ordenador cuántico?<br />Pruébalo tú mismo</h1>
+      <p class="lead">
+        Esta página visualiza el proyecto
+        <strong style="color:var(--text)">quantum-sim-c</strong>:
+        un simulador educativo en lenguaje C. Aquí no hace falta compilar:
+        experimenta superposición, entrelazamiento, ruido y algoritmos con demos en vivo.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#lab-1q">Empezar el laboratorio</a>
+        <a class="btn" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Ver repositorio</a>
+      </div>
+    </header>
+
+    <!-- Objetivos de aprendizaje -->
+    <section id="aprender">
+      <h2>Objetivo de aprendizaje</h2>
+      <p class="section-lead">
+        Al terminar este recorrido deberías poder explicar, con tus propias palabras,
+        <em>qué es un estado cuántico</em>, <em>por qué mides y colapsa</em>,
+        <em>qué es el entrelazamiento</em> y <em>por qué el ruido rompe los algoritmos</em>.
+      </p>
+      <ol class="steps card">
+        <li>
+          <strong>Un qubit no es 0 y 1 a la vez “como magia”</strong><br />
+          <span>Es un vector de amplitudes. La probabilidad de cada resultado es |amplitud|².</span>
+        </li>
+        <li>
+          <strong>Las puertas rotan ese vector (unitarias)</strong><br />
+          <span>Hadamard crea superposición. X es un NOT. CNOT entrelaza dos qubits.</span>
+        </li>
+        <li>
+          <strong>Medir colapsa</strong><br />
+          <span>Tras medir, el estado se proyecta. Por eso hacemos muchos “tiros” (shots) y vemos un histograma.</span>
+        </li>
+        <li>
+          <strong>El hardware real es ruidoso (NISQ)</strong><br />
+          <span>Pequeños errores destruyen correlaciones y arruinan Grover si el circuito es profundo.</span>
+        </li>
+        <li>
+          <strong>QML ≠ ventaja automática sobre la IA clásica</strong><br />
+          <span>Un VQC puede ganar a un modelo lineal; un MLP pequeño suele ser el baseline serio.</span>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Conceptos -->
+    <section>
+      <h2>Ideas clave en 30 segundos</h2>
+      <div class="chips">
+        <div class="chip"><strong>Estado</strong>Vector de 2ⁿ números complejos (amplitudes)</div>
+        <div class="chip"><strong>Puerta</strong>Matriz unitaria que transforma el estado</div>
+        <div class="chip"><strong>Medición</strong>Resultado 0/1 con P = |amp|² y colapso</div>
+        <div class="chip"><strong>Entrelazamiento</strong>Correlaciones imposibles de copiar clásicamente</div>
+        <div class="chip"><strong>NISQ</strong>Dispositivos ruidosos de escala intermedia</div>
+        <div class="chip"><strong>Clifford</strong>Subconjunto de puertas simulable a n grande</div>
+      </div>
+    </section>
+
+    <!-- Lab 1 qubit -->
+    <section id="lab-1q">
+      <h2>Laboratorio 1 · Un qubit y la superposición</h2>
+      <p class="section-lead">
+        Parte de |0⟩. Aplica <strong>H</strong> (Hadamard): obtienes (|0⟩+|1⟩)/√2.
+        Cada medición da 0 o 1 al 50%. Acumula tiros y mira el histograma.
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Circuito y controles</h3>
+          <div class="circuit">q0:  |0⟩ ──[ H ]──[ medida ]──</div>
+          <div class="lab-controls">
+            <button class="btn btn-sm" id="btn-reset-1q">Reset |0⟩</button>
+            <button class="btn btn-sm btn-primary" id="btn-h-1q">Hadamard H</button>
+            <button class="btn btn-sm" id="btn-x-1q">Pauli X</button>
+            <button class="btn btn-sm" id="btn-measure-1q">Medir 1 vez</button>
+            <button class="btn btn-sm" id="btn-shots-1q">+50 tiros (estado actual)</button>
+          </div>
+          <p class="stat-line" id="stat-1q"></p>
+          <div class="callout idea">
+            <strong>Prueba esto:</strong> Reset → H → Medir varias veces.
+            Luego Reset → H → X → mira las barras (X tras H solo añade una fase global en este caso simple;
+            mejor: Reset → X → H y compara con solo H).
+          </div>
+          <h3>Amplitudes (probabilidades)</h3>
+          <div class="amps" id="amps-1q"></div>
+        </div>
+        <div class="card">
+          <h3>Esfera de Bloch (simplificada)</h3>
+          <div class="bloch-wrap">
+            <canvas class="bloch-canvas" id="bloch" width="180" height="180"></canvas>
+            <div>
+              <p class="muted small">
+                El vector apunta al polo norte en |0⟩ y al sur en |1⟩.
+                Tras H se va al ecuador: máxima incertidumbre al medir en Z.
+              </p>
+              <h3 style="margin-top:1rem">Histograma de mediciones</h3>
+              <div class="hist" id="hist-1q"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bell -->
+    <section id="lab-bell">
+      <h2>Laboratorio 2 · Entrelazamiento (Bell Φ+)</h2>
+      <p class="section-lead">
+        Circuito: <code>H(q0)</code> y luego <code>CNOT(q0→q1)</code>.
+        El estado es (|00⟩+|11⟩)/√2. Las mediciones de ambos qubits
+        <strong>siempre coinciden</strong> — aunque cada uno por separado sea aleatorio.
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Construye el par de Bell</h3>
+          <div class="circuit">q0:  |0⟩ ──[ H ]──●──
+q1:  |0⟩ ─────────⊕──</div>
+          <div class="lab-controls">
+            <button class="btn btn-sm btn-primary" id="btn-bell-build">Crear Bell Φ+</button>
+            <button class="btn btn-sm" id="btn-bell-measure">Medir ambos (1 tiro)</button>
+            <button class="btn btn-sm" id="btn-bell-shots">40 tiros (reconstruye Bell)</button>
+          </div>
+          <p class="stat-line" id="stat-bell"></p>
+          <div class="amps" id="amps-bell"></div>
+          <div class="callout">
+            ⟨Z₀Z₁⟩ = +1 significa correlación perfecta en la base computacional.
+            Si vieras |01⟩ o |10⟩ con frecuencia, el entrelazamiento se ha roto (ruido).
+          </div>
+        </div>
+        <div class="card">
+          <h3>Histograma |00⟩ |01⟩ |10⟩ |11⟩</h3>
+          <div class="hist" id="hist-bell"></div>
+          <p class="muted small" style="margin-top:1rem">
+            En el código C del repo: <code>gate_h</code> + <code>gate_cnot</code>
+            y el demo de correlación en <code>main.c</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Noise -->
+    <section id="lab-noise">
+      <h2>Laboratorio 3 · Ruido NISQ</h2>
+      <p class="section-lead">
+        En hardware real las puertas fallan. Aquí aplicamos un canal
+        <strong>depolarizing</strong> (con probabilidad p aplica X, Y o Z al azar)
+        a un estado de Bell y promediamos muchas trayectorias — igual que
+        <code>noise_demo.c</code> en el repositorio.
+      </p>
+      <div class="card">
+        <div class="lab-controls">
+          <label>p error <input type="range" id="noise-slider" min="0" max="0.5" step="0.01" value="0.10" /> <span id="noise-p-label">0.10</span></label>
+        </div>
+        <div class="grid-2">
+          <div>
+            <p class="muted small">|⟨ZZ⟩| (correlación)</p>
+            <div class="amp-bar-bg" style="height:22px"><div class="amp-bar" id="noise-zz"></div></div>
+            <p class="muted small" style="margin-top:0.75rem">Fidelidad media vs Bell ideal</p>
+            <div class="amp-bar-bg" style="height:22px"><div class="amp-bar phase-neg" id="noise-fid"></div></div>
+          </div>
+          <div id="noise-stats"></div>
+        </div>
+        <div class="callout warn">
+          <strong>Lección NISQ:</strong> aunque el algoritmo sea correcto “en el papel”,
+          si p es grande la ventaja se evapora. Por eso importan la profundidad del circuito
+          y la corrección de errores.
+        </div>
+      </div>
+    </section>
+
+    <!-- Grover -->
+    <section id="lab-grover">
+      <h2>Laboratorio 4 · Búsqueda de Grover (2 qubits)</h2>
+      <p class="section-lead">
+        Buscamos el estado marcado <strong>|11⟩</strong> entre 4 posibilidades.
+        Con 1 iteración ideal, la probabilidad se concentra en |11⟩.
+        Añade ruido tras cada capa y observa cómo cae el éxito.
+      </p>
+      <div class="card">
+        <div class="circuit">H⊗H → oráculo CZ → difusor → (ruido opcional en cada capa)</div>
+        <div class="lab-controls">
+          <button class="btn btn-sm btn-primary" id="btn-grover-ideal">Grover ideal</button>
+          <label>ruido p <input type="range" id="grover-noise" min="0" max="0.25" step="0.01" value="0.05" /> <span id="grover-noise-label">0.05</span></label>
+          <button class="btn btn-sm" id="btn-grover-noise">Simular con ruido</button>
+        </div>
+        <p class="stat-line" id="grover-stats"></p>
+        <div class="hist" id="hist-grover"></div>
+      </div>
+    </section>
+
+    <!-- QML -->
+    <section id="qml">
+      <h2>QML vs IA clásica (resultado del repo)</h2>
+      <p class="section-lead">
+        En <code>qml_compare.c</code> comparamos tres modelos sobre los mismos datos 2D:
+        regresión logística, un MLP de 8 neuronas y un VQC de 2 qubits simulado.
+        Accuracy de test típica de esa demo:
+      </p>
+      <div class="card" style="overflow-x:auto">
+        <table class="compare">
+          <thead>
+            <tr>
+              <th>Dataset</th>
+              <th>Logística</th>
+              <th>MLP (8)</th>
+              <th>VQC (2q)</th>
+              <th>Lectura didáctica</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Blobs (lineal)</td>
+              <td class="win">100%</td>
+              <td class="win">100%</td>
+              <td>~97–100%</td>
+              <td>Basta un modelo lineal</td>
+            </tr>
+            <tr>
+              <td>Círculos</td>
+              <td class="lose">~33%</td>
+              <td class="win">100%</td>
+              <td>~65%</td>
+              <td>Gana el MLP</td>
+            </tr>
+            <tr>
+              <td>XOR</td>
+              <td class="lose">~35%</td>
+              <td class="win">100%</td>
+              <td class="win">100%</td>
+              <td>VQC ≈ MLP; ambos superan lo lineal</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout idea" style="margin-top:1rem">
+          <strong>Mensaje clave:</strong> “El VQC gana a la logística en XOR” demuestra
+          frontera no lineal, <em>no</em> que el cuántico derrote a la IA moderna.
+          El baseline serio es el MLP (u otros modelos clásicos).
+        </div>
+      </div>
+    </section>
+
+    <!-- Engines -->
+    <section id="motores">
+      <h2>Dos motores en C · ¿cuál usar?</h2>
+      <p class="section-lead">
+        El repositorio no es un solo simulador: son dos herramientas con nichos distintos.
+      </p>
+      <div class="engines">
+        <div class="engine-card sv">
+          <h3>Statevector · <code>quantum_sim</code></h3>
+          <ul>
+            <li>Guarda 2ⁿ amplitudes complejas</li>
+            <li>Cualquier puerta: H, T, Rx, Toffoli…</li>
+            <li>Ruido NISQ y demos QML</li>
+            <li>Límite práctico ~12 qubits</li>
+          </ul>
+        </div>
+        <div class="engine-card st">
+          <h3>Estabilizadores · <code>stabilizer</code></h3>
+          <ul>
+            <li>Tableau Gottesman–Knill O(n²)</li>
+            <li>Solo puertas Clifford (H, S, CNOT…)</li>
+            <li>GHZ de 64 qubits, códigos de error</li>
+            <li>Benchmark hasta cientos de qubits</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <h3>Memoria: statevector vs tableau (orden de magnitud)</h3>
+        <p class="muted small">Statevector ≈ 16·2ⁿ bytes. Tableau ≈ O(n²) bits.</p>
+        <div class="scale-row">
+          <span>n = 10</span>
+          <div class="scale-bar-bg"><div class="scale-bar sv" style="width:8%"></div></div>
+          <span>~16 KB SV</span>
+        </div>
+        <div class="scale-row">
+          <span>n = 20</span>
+          <div class="scale-bar-bg"><div class="scale-bar sv" style="width:40%"></div></div>
+          <span>~16 MB SV</span>
+        </div>
+        <div class="scale-row">
+          <span>n = 30</span>
+          <div class="scale-bar-bg"><div class="scale-bar sv" style="width:100%"></div></div>
+          <span>~16 GB SV</span>
+        </div>
+        <div class="scale-row">
+          <span>n = 64 stab</span>
+          <div class="scale-bar-bg"><div class="scale-bar st" style="width:15%"></div></div>
+          <span>~16 KB tableau</span>
+        </div>
+        <div class="scale-row">
+          <span>n = 256 stab</span>
+          <div class="scale-bar-bg"><div class="scale-bar st" style="width:55%"></div></div>
+          <span>~centenas KB</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compile -->
+    <section id="codigo">
+      <h2>Reproduce los demos en tu máquina</h2>
+      <div class="card">
+        <div class="circuit">git clone https://github.com/FiveTechSoft/quantum-sim-c.git
+cd quantum-sim-c
+make && make run
+make run-qml
+make run-noise
+make run-stab</div>
+        <p class="muted small">
+          Requisitos: GCC o clang (o MinGW en Windows) y <code>make</code> opcional.
+          La web que estás viendo vive en la carpeta <code>docs/</code> y se publica con GitHub Pages.
+        </p>
+        <div class="hero-actions" style="justify-content:flex-start;margin-top:1rem">
+          <a class="btn btn-primary" href="https://github.com/FiveTechSoft/quantum-sim-c" target="_blank" rel="noopener">Abrir repositorio</a>
+          <a class="btn" href="https://github.com/FiveTechSoft/quantum-sim-c/blob/main/README.md" target="_blank" rel="noopener">README completo</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        <strong style="color:var(--text)">quantum-sim-c</strong> —
+        simulador educativo de ordenador cuántico en C.
+        Página didáctica con demos en el navegador (JS) alineadas con el código del repo.
+      </p>
+      <p>
+        <a href="https://github.com/FiveTechSoft/quantum-sim-c">GitHub</a>
+        · MIT-style uso libre educativo
+      </p>
+    </footer>
+  </main>
+
+  <script src="js/quantum.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
