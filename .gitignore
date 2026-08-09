@@ -1,0 +1,27 @@
+# Binaries
+*.o
+*.exe
+*.out
+*.obj
+*.dll
+*.so
+*.dylib
+
+# Build targets
+/quantum_sim
+/qml_compare
+/noise_demo
+/stab_demo
+
+# IDE / OS
+.vs/
+.vscode/
+*.user
+.DS_Store
+Thumbs.db
+
+# Debug
+*.pdb
+*.ilk
+*.exp
+*.lib
