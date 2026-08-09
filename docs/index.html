@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Simulador Cuántico en C — laboratorio didáctico</title>
   <meta name="description" content="Explora de forma visual e interactiva un simulador de ordenador cuántico en C: superposición, Bell, Grover, ruido NISQ, QML y estabilizadores Clifford." />
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%230b0f1a' stroke='%233ee0ff' stroke-width='2'/%3E%3Cpath d='M16 6 L16 26 M6 16 L26 16' stroke='%23a78bfa' stroke-width='1.5' opacity='.6'/%3E%3Ccircle cx='16' cy='10' r='3' fill='%233ee0ff'/%3E%3C/svg%3E" />
-  <!-- theme + fix de rutas GitHub Pages (debe ir antes que el resto) -->
-  <script src="js/theme.js?v=3"></script>
+  <script src="js/theme.js?v=4"></script>
 </head>
 <body>
   <nav class="nav">
@@ -60,7 +59,7 @@
             <select id="pg-examples"></select>
           </label>
           <button type="button" class="btn btn-sm" id="pg-load-ex">Cargar y ejecutar</button>
-          <button type="button" class="btn btn-sm btn-primary" id="pg-run">▶ Ejecutar</button>
+          <button type="button" class="btn btn-sm btn-primary" id="pg-run" data-action="run" onclick="if(window.__pgRun){window.__pgRun();}else{alert('Motor aun no cargado: espera 1s o Ctrl+F5');} return false;">Ejecutar</button>
           <button type="button" class="btn btn-sm" id="pg-clear-log">Limpiar log</button>
           <label class="muted small">qubits
             <select id="pg-nqubits">
@@ -459,8 +458,30 @@ make run-stab</div>
   </main>
 
   <!-- ?v= evita caché vieja en GitHub Pages / navegador -->
-  <script src="js/quantum_sim.js?v=3"></script>
-  <script src="js/playground.js?v=3"></script>
-  <script src="js/app.js?v=3"></script>
+  <script src="js/quantum_sim.js?v=4"></script>
+  <script src="js/playground.js?v=4"></script>
+  <script src="js/app.js?v=4"></script>
+  <script>
+    // Diagnóstico visible si el motor no arranca
+    (function () {
+      function check() {
+        var s = document.getElementById("pg-status");
+        if (!window.QuantumSim) {
+          if (s) {
+            s.style.color = "#f87171";
+            s.textContent =
+              "FALLO: no se cargo quantum_sim.js. Abre https://fivetechsoft.github.io/quantum-sim-c/ (con / final) y Ctrl+F5.";
+          }
+          return;
+        }
+        if (!window.__pgRun && s) {
+          s.style.color = "#fbbf24";
+          s.textContent = "Motor OK pero playground no cableado — recarga.";
+        }
+      }
+      setTimeout(check, 500);
+      setTimeout(check, 2000);
+    })();
+  </script>
 </body>
 </html>
